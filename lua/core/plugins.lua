@@ -13,17 +13,12 @@ local packer_bootstrap = ensure_packer()
 
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
-  use { "catppuccin/nvim", as = "catppuccin" }
+  use { 'catppuccin/nvim', as = 'catppuccin' }
   use {
     'nvim-tree/nvim-tree.lua',
     requires = {
         'nvim-tree/nvim-web-devicons', -- optional, for file icons
     },
-  }
-  use {
-  'nvim-telescope/telescope.nvim', tag = '0.1.1',
-  -- or                            , branch = '0.1.x',
-    requires = { {'nvim-lua/plenary.nvim'} }
   }
 
   use {
@@ -32,6 +27,24 @@ return require('packer').startup(function(use)
         local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
         ts_update()
     end,
+  }
+
+  use 'hrsh7th/nvim-cmp'
+  use 'hrsh7th/cmp-nvim-lsp'
+  use 'L3MON4D3/LuaSnip'
+  use 'saadparwaiz1/cmp_luasnip'
+  use 'rafamadriz/friendly-snippets'
+
+  use {
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+    'neovim/nvim-lspconfig',
+  }
+
+  use {
+  'nvim-telescope/telescope.nvim', tag = '0.1.1',
+  -- or                            , branch = '0.1.x',
+    requires = { {'nvim-lua/plenary.nvim'} }
   }
 
   -- Automatically set up your configuration after cloning packer.nvim
