@@ -17,6 +17,14 @@ require("nvim-tree").setup({
   filters = {
     dotfiles = true,
   },
+  git = {
+    enable = true,
+    ignore = true,
+    timeout = 500,
+  },
 })
 
 vim.keymap.set('n', '<c-n>', ':NvimTreeFindFileToggle<CR>')
+vim.keymap.set('n', '<c-l>', ':tabNext<CR>')
+vim.keymap.set('n', '<c-h>', ':tabprevious<CR>')
+
