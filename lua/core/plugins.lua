@@ -14,6 +14,9 @@ local packer_bootstrap = ensure_packer()
 return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use { 'catppuccin/nvim', as = 'catppuccin' }
+
+  use 'lewis6991/gitsigns.nvim'
+
   use 'nvim-tree/nvim-web-devicons'
   use {
     'nvim-tree/nvim-tree.lua',
@@ -27,6 +30,9 @@ return require('packer').startup(function(use)
     requires = { 'kyazdani42/nvim-web-devicons', opt = true }
   }
 
+-- using packer.nvim
+  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+
   use {
     'nvim-treesitter/nvim-treesitter',
     run = function()
@@ -35,10 +41,7 @@ return require('packer').startup(function(use)
     end,
   }
 
-  use {
-    'mrjones2014/winbarbar.nvim',
-    requires = {'kyazdani42/nvim-web-devicons'}
-  }
+
 
   use 'hrsh7th/nvim-cmp'
   use 'hrsh7th/cmp-nvim-lsp'
