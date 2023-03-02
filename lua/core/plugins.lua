@@ -15,6 +15,18 @@ return require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use { 'catppuccin/nvim', as = 'catppuccin' }
 
+  use {
+    'rmagatti/auto-session',
+    config = function()
+      require("auto-session").setup {
+        log_level = "error",
+        auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/"},
+      }
+    end
+  }
+
+  use 'Pocco81/auto-save.nvim'
+
   use 'lewis6991/gitsigns.nvim'
 
   use 'nvim-tree/nvim-web-devicons'
