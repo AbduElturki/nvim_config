@@ -5,7 +5,6 @@ vim.g.loaded_netrwPlugin = 1
 --vim.opt.termguicolors = true
 
 require("nvim-tree").setup({
-  auto_close = true,
   open_on_tab = false,
   sort_by = "case_sensitive",
   renderer = {

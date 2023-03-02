@@ -30,8 +30,8 @@ return require('packer').startup(function(use)
     requires = { 'kyazdani42/nvim-web-devicons', opt = true }
   }
 
--- using packer.nvim
   use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
+  use 'fgheng/winbar.nvim'
 
   use {
     'nvim-treesitter/nvim-treesitter',
