@@ -1,7 +1,7 @@
 -- vim.opt-termguicolors = true
 require("bufferline").setup({
   options = {
-    mode = "tabs"
+    mode = "buffer"
   }
 })
 
@@ -40,3 +40,5 @@ require('winbar').setup({
         'qf',
     }
 })
+
+vim.keymap.set('n', '<leader>q', ':Sayonara!<CR>')
