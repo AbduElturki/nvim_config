@@ -1,82 +1,78 @@
-local ensure_packer = function()
-  local fn = vim.fn
-  local install_path = fn.stdpath('data')..'/site/pack/packer/start/packer.nvim'
-  if fn.empty(fn.glob(install_path)) > 0 then
-    fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim', install_path})
-    vim.cmd [[packadd packer.nvim]]
-    return true
-  end
-  return false
+-- Bootstrap lazy.nvim
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+	local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+	local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+	if vim.v.shell_error ~= 0 then
+		vim.api.nvim_echo({
+			{ "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+			{ out, "WarningMsg" },
+			{ "\nPress any key to exit..." },
+		}, true, {})
+		vim.fn.getchar()
+		os.exit(1)
+	end
 end
+vim.opt.rtp:prepend(lazypath)
 
-local packer_bootstrap = ensure_packer()
+vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
-return require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim'
-  use { 'catppuccin/nvim', as = 'catppuccin' }
+local plugins = {
+	{ "catppuccin/nvim", name = "catppuccin" },
 
-  use {
-    'rmagatti/auto-session',
-    config = function()
-      require("auto-session").setup {
-        log_level = "error",
-        auto_session_suppress_dirs = { "~/", "~/Projects", "~/Downloads", "/"},
-      }
-    end
+  {
+  'rmagatti/auto-session',
+  lazy = false,
+
+  ---enables autocomplete for opts
+  ---@module "auto-session"
+  ---@type AutoSession.Config
+  opts = {
+    suppressed_dirs = { '~/', '~/Projects', '~/Downloads', '/' },
+    -- log_level = 'debug',
   }
+},
 
-  use 'Pocco81/auto-save.nvim'
+	"Pocco81/auto-save.nvim",
 
-  use 'lewis6991/gitsigns.nvim'
+	"lewis6991/gitsigns.nvim",
 
-  use 'nvim-tree/nvim-web-devicons'
-  use {
-    'nvim-tree/nvim-tree.lua',
-    requires = {
-        'nvim-tree/nvim-web-devicons', -- optional, for file icons
+	"nvim-tree/nvim-web-devicons",
+
+	{ "nvim-tree/nvim-tree.lua", dependencies = { "nvim-tree/nvim-web-devicons" } },
+
+	"mhinz/vim-sayonara",
+
+	{
+		"nvim-lualine/lualine.nvim",
+		dependencies = { "kyazdani42/nvim-web-devicons", opt = true },
+	},
+
+	{ "akinsho/bufferline.nvim", version = "*", dependencies = "nvim-tree/nvim-web-devicons" },
+	"fgheng/winbar.nvim",
+
+	{
+		"nvim-treesitter/nvim-treesitter",
+		run = ":TSUpdate",
+	},
+
+	"hrsh7th/nvim-cmp",
+	"hrsh7th/cmp-nvim-lsp",
+	"L3MON4D3/LuaSnip",
+	"saadparwaiz1/cmp_luasnip",
+	"rafamadriz/friendly-snippets",
+
+	{
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"neovim/nvim-lspconfig",
+	},
+
+    {
+    'nvim-telescope/telescope.nvim', tag = '0.1.4',
+      dependencies = { 'nvim-lua/plenary.nvim' }
     },
-  }
-  use 'mhinz/vim-sayonara'
+}
 
-  use {
-    'nvim-lualine/lualine.nvim',
-    requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-  }
-
-  use {'akinsho/bufferline.nvim', tag = "v3.*", requires = 'nvim-tree/nvim-web-devicons'}
-  use 'fgheng/winbar.nvim'
-
-  use {
-    'nvim-treesitter/nvim-treesitter',
-    run = function()
-        local ts_update = require('nvim-treesitter.install').update({ with_sync = true })
-        ts_update()
-    end,
-  }
-
-
-
-  use 'hrsh7th/nvim-cmp'
-  use 'hrsh7th/cmp-nvim-lsp'
-  use 'L3MON4D3/LuaSnip'
-  use 'saadparwaiz1/cmp_luasnip'
-  use 'rafamadriz/friendly-snippets'
-
-  use {
-    'williamboman/mason.nvim',
-    'williamboman/mason-lspconfig.nvim',
-    'neovim/nvim-lspconfig',
-  }
-
-  use {
-  'nvim-telescope/telescope.nvim', tag = '0.1.1',
-  -- or                            , branch = '0.1.x',
-    requires = { {'nvim-lua/plenary.nvim'} }
-  }
-
-  -- Automatically set up your configuration after cloning packer.nvim
-  -- Put this at the end after all plugins
-  if packer_bootstrap then
-    require('packer').sync()
-  end
-end)
+require("lazy").setup(plugins, {})
