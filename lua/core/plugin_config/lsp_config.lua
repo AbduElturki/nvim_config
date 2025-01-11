@@ -1,6 +1,6 @@
 require("mason").setup()
 require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "clangd", "rust_analyzer" },
+	ensure_installed = { "lua_ls", "clangd", "pylsp", "ast_grep", "spectral", "zls" },
 })
 
 local on_attach = function(_, _)
@@ -25,7 +25,14 @@ require("lspconfig").clangd.setup({
 	capabilities = capabilities,
 })
 
-require("lspconfig").rust_analyzer.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-})
+local lsp = require("lsp-zero").preset({})
+
+lsp.on_attach(function(client, bufnr)
+	-- see :help lsp-zero-keybindings
+	-- to learn the available actions
+	lsp.default_keymaps({ buffer = bufnr })
+end)
+
+require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
+
+lsp.setup()
