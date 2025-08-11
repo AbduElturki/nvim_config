@@ -1,38 +1,41 @@
 require("mason").setup()
-require("mason-lspconfig").setup({
-	ensure_installed = { "lua_ls", "clangd", "pylsp", "ast_grep", "spectral", "zls" },
-})
 
 local on_attach = function(_, _)
-	vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
-	vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
+  vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, {})
+  vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, {})
 
-	vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
-	vim.keymap.set("n", "gi", vim.lsp.buf.implementation, {})
-	vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, {})
-	vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
+  vim.keymap.set("n", "gd", vim.lsp.buf.definition, {})
+  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, {})
+  vim.keymap.set("n", "gr", require("telescope.builtin").lsp_references, {})
+  vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
 end
 
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
+vim.lsp.config.clangd = {
+  capabilities = capabilities,
+  on_attach = on_attach,
+  cmd = { "clangd", "--background-index", "--clang-tidy", "--offset-encoding=utf-16", "-j=8", "--malloc-trim", "--pch-storage=memory" },
+  filetypes = { "c", "cpp" },
+}
+vim.lsp.enable("clangd")
 
-require("lspconfig").lua_ls.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-})
+vim.lsp.config.pyright = {
+  capabilities = capabilities,
+  on_attach = on_attach,
+  cmd = { "pyright-langserver", "--stdio" },
+  filetypes = { "python" },
+}
+vim.lsp.enable("pyright")
 
-require("lspconfig").clangd.setup({
-	on_attach = on_attach,
-	capabilities = capabilities,
-})
+vim.lsp.config.rust_analyzer = {
+  capabilities = capabilities,
+  on_attach = on_attach,
+  cmd = { "rust-analyzer" },
+  filetypes = { "rust" },
+}
+vim.lsp.enable("rust_analyzer")
 
-local lsp = require("lsp-zero").preset({})
-
-lsp.on_attach(function(client, bufnr)
-	-- see :help lsp-zero-keybindings
-	-- to learn the available actions
-	lsp.default_keymaps({ buffer = bufnr })
-end)
-
-require("lspconfig").lua_ls.setup(lsp.nvim_lua_ls())
-
-lsp.setup()
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities.workspace.didChangeWatchedFiles.dynamicRegistration = false
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+capabilities.textDocument.completion.completionItem.preselectSupport = true
+capabilities.textDocument.completion.completionItem.insertReplaceSupport = true
