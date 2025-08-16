@@ -41,4 +41,4 @@ require("winbar").setup({
 	},
 })
 
-vim.keymap.set("n", "<leader>q", ":Sayonara!<CR>")
+vim.keymap.set("n", "<leader>q", ":bp|sp|bn|bd<CR>", { noremap = true, silent = true, desc = "Close current buffer" })
