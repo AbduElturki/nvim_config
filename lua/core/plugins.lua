@@ -40,11 +40,41 @@ local plugins = {
 
 	"nvim-tree/nvim-web-devicons",
 
-	{ "stevearc/dressing.nvim", opts = {} },
-
 	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
 
 	"lewis6991/gitsigns.nvim",
+
+  {
+    "kdheepak/lazygit.nvim",
+    lazy = true,
+    cmd = {
+        "LazyGit",
+        "LazyGitConfig",
+        "LazyGitCurrentFile",
+        "LazyGitFilter",
+        "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+    },
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
+    keys = {
+        { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
+    }
+  },
+
+  {
+    "igorlfs/nvim-dap-view",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+      "mfussenegger/nvim-dap-python",
+    },
+    ---@module 'dap-view'
+    ---@type dapview.Config
+    opts = {},
+  },
 
 	{ "akinsho/git-conflict.nvim", version = "*", config = true },
 
@@ -115,25 +145,95 @@ local plugins = {
     end,
   },
 
-	{
-		"hrsh7th/nvim-cmp",
-		dependencies = {
-			{ "saadparwaiz1/cmp_luasnip", lazy = true },
-			{ "hrsh7th/cmp-buffer", lazy = true },
-			{ "FelipeLema/cmp-async-path", lazy = true },
-			{ "hrsh7th/cmp-cmdline", lazy = true },
-			{ "dmitmel/cmp-cmdline-history", lazy = true },
-			{ "hrsh7th/cmp-nvim-lsp-signature-help", lazy = true },
-			{ "hrsh7th/cmp-nvim-lua", lazy = true },
-			{ "hrsh7th/cmp-calc", lazy = true },
-			{ "ray-x/cmp-treesitter", lazy = true },
-		},
-	},
+  {
+    "saghen/blink.cmp",
+    dependencies = {
+        "giuxtaposition/blink-cmp-copilot",
+        "Kaiser-Yang/blink-cmp-avante",
+    },
+    build = "cargo build --release",
+    opts = {
+      keymap = {
+        preset = "default", 
+        ["<CR>"] = { "accept", "fallback" },
+      },
+      completion = {
+        ghost_text = { enabled = true },
+      },
+      sources = {
+        default = { "lsp", "path", "snippets", "buffer", "copilot", "avante" },
+        providers = {
+          copilot = {
+            name = "copilot",
+            module = "blink-cmp-copilot",
+            score_offset = 100,
+            async = true,
+            transform_items = function(_, items)
+              local CompletionItemKind = require("blink.cmp.types").CompletionItemKind
+              local kind_idx = #CompletionItemKind + 1
+              CompletionItemKind[kind_idx] = "Copilot"
+              for _, item in ipairs(items) do
+                item.kind = kind_idx
+              end
+              return items
+            end,
+          },
+          avante = {
+            module = 'blink-cmp-avante',
+            name = 'Avante',
+            opts = {
+            }
+          }
+        },
+        appearance = {
+          kind_icons = {
+            Copilot = "",
+            Text = '󰉿',
+            Method = '󰊕',
+            Function = '󰊕',
+            Constructor = '󰒓',
+
+            Field = '󰜢',
+            Variable = '󰆦',
+            Property = '󰖷',
+
+            Class = '󱡠',
+            Interface = '󱡠',
+            Struct = '󱡠',
+            Module = '󰅩',
+
+            Unit = '󰪚',
+            Value = '󰦨',
+            Enum = '󰦨',
+            EnumMember = '󰦨',
+
+            Keyword = '󰻾',
+            Constant = '󰏿',
+
+            Snippet = '󱄽',
+            Color = '󰏘',
+            File = '󰈔',
+            Reference = '󰬲',
+            Folder = '󰉋',
+            Event = '󱐋',
+            Operator = '󰪚',
+            TypeParameter = '󰬛',
+          },
+        },
+      },
+    },
+  },
+
+  {
+    'felpafel/inlay-hint.nvim',
+    event = 'LspAttach',
+    config = true,
+  },
 
 	{
 		"williamboman/mason.nvim",
 		opts = {
-			PATH = "append",
+			PATH = "prepend",
 		},
 	},
 
@@ -148,26 +248,6 @@ local plugins = {
 
 	{ "j-hui/fidget.nvim", opts = {} },
 
-	{
-		"zbirenbaum/copilot-cmp",
-		dependencies = {
-			{ "github/copilot.vim" },
-			{ "nvim-lua/plenary.nvim", branch = "master" },
-			config = function()
-				require("copilot_cmp").setup()
-			end,
-		},
-	},
-
-	{
-		"CopilotC-Nvim/CopilotChat.nvim",
-		dependencies = {
-			{ "github/copilot.vim" },
-			{ "nvim-lua/plenary.nvim", branch = "master" },
-		},
-		build = "make tiktoken",
-		opts = {},
-	},
   {
     "folke/which-key.nvim",
     event = "VeryLazy",
@@ -183,7 +263,14 @@ local plugins = {
       },
     },
   },
-
+  {
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({})
+    end,
+  },
 	{
 		"yetone/avante.nvim",
 		build = vim.fn.has("win32") ~= 0
@@ -213,7 +300,6 @@ local plugins = {
 			"nvim-lua/plenary.nvim",
 			"MunifTanjim/nui.nvim",
 			"echasnovski/mini.pick",
-			"hrsh7th/nvim-cmp",
 			"ibhagwan/fzf-lua",
 			"stevearc/dressing.nvim",
 			"folke/snacks.nvim",
