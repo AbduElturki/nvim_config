@@ -66,6 +66,7 @@ vim.keymap.set(
 	":lua require'fzf-lua'.lsp_definitions({ winopts = {relative='cursor',row=1.01, col=0, height=0.5, width=0.5} })<cr>",
 	{ desc = "Get definition" }
 )
+vim.keymap.set("n", "ca", vim.lsp.buf.code_action, { desc = "Code action" })
 vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Get implementation" })
 vim.keymap.set("n", "gr", ":lua require'fzf-lua'.lsp_references", { desc = "Get references" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, {})
