@@ -34,47 +34,90 @@ local plugins = {
 		},
 	},
 
-	"Pocco81/auto-save.nvim",
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    config = true,
+  },
 
-	"LunarVim/bigfile.nvim",
+	{
+		"folke/snacks.nvim",
+		priority = 1000,
+		lazy = false,
+		---@type snacks.Config
+		opts = {
+			animate = { enabled = true },
+			bigfile = { enabled = true },
+			dashboard = { enabled = true },
+			explorer = { enabled = false },
+			indent = { enabled = true },
+			input = { enabled = true },
+			picker = { enabled = false },
+			notifier = { enabled = true },
+			quickfile = { enabled = true },
+			scope = { enabled = true },
+			scroll = { enabled = true },
+			statuscolumn = { enabled = false },
+			words = { enabled = true },
+		},
+	},
+
+	{
+		"folke/which-key.nvim",
+		event = "VeryLazy",
+		opts = {
+			-- your configuration comes here
+			-- or leave it empty to use the default settings
+			-- refer to the configuration section below
+		},
+		keys = {
+			{
+				"<leader>?",
+				function()
+					require("which-key").show({ global = false })
+				end,
+				desc = "Buffer Local Keymaps (which-key)",
+			},
+		},
+	},
+
+	"Pocco81/auto-save.nvim",
 
 	"nvim-tree/nvim-web-devicons",
 
-	{ "lukas-reineke/indent-blankline.nvim", main = "ibl", opts = {} },
-
 	"lewis6991/gitsigns.nvim",
 
-  {
-    "kdheepak/lazygit.nvim",
-    lazy = true,
-    cmd = {
-        "LazyGit",
-        "LazyGitConfig",
-        "LazyGitCurrentFile",
-        "LazyGitFilter",
-        "LazyGitFilterCurrentFile",
-    },
-    -- optional for floating window border decoration
-    dependencies = {
-        "nvim-lua/plenary.nvim",
-    },
-    -- setting the keybinding for LazyGit with 'keys' is recommended in
-    -- order to load the plugin when the command is run for the first time
-    keys = {
-        { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
-    }
-  },
+	{
+		"kdheepak/lazygit.nvim",
+		lazy = true,
+		cmd = {
+			"LazyGit",
+			"LazyGitConfig",
+			"LazyGitCurrentFile",
+			"LazyGitFilter",
+			"LazyGitFilterCurrentFile",
+		},
+		-- optional for floating window border decoration
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+		},
+		-- setting the keybinding for LazyGit with 'keys' is recommended in
+		-- order to load the plugin when the command is run for the first time
+		keys = {
+			{ "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
+		},
+	},
 
-  {
-    "igorlfs/nvim-dap-view",
-    dependencies = {
-      "mfussenegger/nvim-dap",
-      "mfussenegger/nvim-dap-python",
-    },
-    ---@module 'dap-view'
-    ---@type dapview.Config
-    opts = {},
-  },
+	{
+		"igorlfs/nvim-dap-view",
+		dependencies = {
+			"mfussenegger/nvim-dap",
+			"mfussenegger/nvim-dap-python",
+		},
+		---@module 'dap-view'
+		---@type dapview.Config
+		opts = {},
+	},
 
 	{ "akinsho/git-conflict.nvim", version = "*", config = true },
 
@@ -107,128 +150,127 @@ local plugins = {
 		opts = {},
 	},
 
-  {
-    "mikavilpas/yazi.nvim",
-    version = "*", -- use the latest stable version
-    event = "VeryLazy",
-    dependencies = {
-      { "nvim-lua/plenary.nvim", lazy = true },
-    },
-    keys = {
-      {
-        "<leader>-",
-        mode = { "n", "v" },
-        "<cmd>Yazi<cr>",
-        desc = "Open yazi at the current file",
-      },
-      {
-        "<c-n>",
-        "<cmd>Yazi cwd<cr>",
-        desc = "Open the file manager in nvim's working directory",
-      },
-      {
-        "<c-up>",
-        "<cmd>Yazi toggle<cr>",
-        desc = "Resume the last yazi session",
-      },
-    },
-    ---@type YaziConfig | {}
-    opts = {
-      open_for_directories = true,
-      keymaps = {
-        show_help = "<f1>",
-      },
-    },
-    init = function()
-      vim.g.loaded_netrw = 1
-      vim.g.loaded_netrwPlugin = 1
-    end,
-  },
+	{
+		"mikavilpas/yazi.nvim",
+		version = "*", -- use the latest stable version
+		event = "VeryLazy",
+		dependencies = {
+			{ "nvim-lua/plenary.nvim", lazy = true },
+		},
+		keys = {
+			{
+				"<leader>-",
+				mode = { "n", "v" },
+				"<cmd>Yazi<cr>",
+				desc = "Open yazi at the current file",
+			},
+			{
+				"<c-n>",
+				"<cmd>Yazi cwd<cr>",
+				desc = "Open the file manager in nvim's working directory",
+			},
+			{
+				"<c-up>",
+				"<cmd>Yazi toggle<cr>",
+				desc = "Resume the last yazi session",
+			},
+		},
+		---@type YaziConfig | {}
+		opts = {
+			open_for_directories = true,
+			keymaps = {
+				show_help = "<f1>",
+			},
+		},
+		init = function()
+			vim.g.loaded_netrw = 1
+			vim.g.loaded_netrwPlugin = 1
+		end,
+	},
 
-  {
-    "saghen/blink.cmp",
-    dependencies = {
-        "giuxtaposition/blink-cmp-copilot",
-        "Kaiser-Yang/blink-cmp-avante",
-    },
-    build = "cargo build --release",
-    opts = {
-      keymap = {
-        preset = "default", 
-        ["<CR>"] = { "accept", "fallback" },
-      },
-      completion = {
-        ghost_text = { enabled = true },
-      },
-      sources = {
-        default = { "lsp", "path", "snippets", "buffer", "copilot", "avante" },
-        providers = {
-          copilot = {
-            name = "copilot",
-            module = "blink-cmp-copilot",
-            score_offset = 100,
-            async = true,
-            transform_items = function(_, items)
-              local CompletionItemKind = require("blink.cmp.types").CompletionItemKind
-              local kind_idx = #CompletionItemKind + 1
-              CompletionItemKind[kind_idx] = "Copilot"
-              for _, item in ipairs(items) do
-                item.kind = kind_idx
-              end
-              return items
-            end,
-          },
-          avante = {
-            module = 'blink-cmp-avante',
-            name = 'Avante',
-            opts = {
-            }
-          }
-        },
-        appearance = {
-          kind_icons = {
-            Copilot = "",
-            Text = '󰉿',
-            Method = '󰊕',
-            Function = '󰊕',
-            Constructor = '󰒓',
+	{
+		"saghen/blink.cmp",
+		dependencies = {
+			"giuxtaposition/blink-cmp-copilot",
+			"Kaiser-Yang/blink-cmp-avante",
+		},
+		build = "cargo build --release",
+		opts = {
+			keymap = {
+				preset = "default",
+				["<CR>"] = { "accept", "fallback" },
+			},
+			completion = {
+				ghost_text = { enabled = true },
+			},
+			sources = {
+				default = { "lsp", "path", "snippets", "buffer", "copilot", "avante" },
+				providers = {
+					copilot = {
+						name = "copilot",
+						module = "blink-cmp-copilot",
+						score_offset = 100,
+						async = true,
+						transform_items = function(_, items)
+							local CompletionItemKind = require("blink.cmp.types").CompletionItemKind
+							local kind_idx = #CompletionItemKind + 1
+							CompletionItemKind[kind_idx] = "Copilot"
+							for _, item in ipairs(items) do
+								item.kind = kind_idx
+							end
+							return items
+						end,
+					},
+					avante = {
+						module = "blink-cmp-avante",
+						name = "Avante",
+						opts = {},
+					},
+				},
+				appearance = {
+					kind_icons = {
+						Copilot = "",
+						Text = "󰉿",
+						Method = "󰊕",
+						Function = "󰊕",
+						Constructor = "󰒓",
 
-            Field = '󰜢',
-            Variable = '󰆦',
-            Property = '󰖷',
+						Field = "󰜢",
+						Variable = "󰆦",
+						Property = "󰖷",
 
-            Class = '󱡠',
-            Interface = '󱡠',
-            Struct = '󱡠',
-            Module = '󰅩',
+						Class = "󱡠",
+						Interface = "󱡠",
+						Struct = "󱡠",
+						Module = "󰅩",
 
-            Unit = '󰪚',
-            Value = '󰦨',
-            Enum = '󰦨',
-            EnumMember = '󰦨',
+						Unit = "󰪚",
+						Value = "󰦨",
+						Enum = "󰦨",
+						EnumMember = "󰦨",
 
-            Keyword = '󰻾',
-            Constant = '󰏿',
+						Keyword = "󰻾",
+						Constant = "󰏿",
 
-            Snippet = '󱄽',
-            Color = '󰏘',
-            File = '󰈔',
-            Reference = '󰬲',
-            Folder = '󰉋',
-            Event = '󱐋',
-            Operator = '󰪚',
-            TypeParameter = '󰬛',
-          },
-        },
-      },
-    },
-  },
+						Snippet = "󱄽",
+						Color = "󰏘",
+						File = "󰈔",
+						Reference = "󰬲",
+						Folder = "󰉋",
+						Event = "󱐋",
+						Operator = "󰪚",
+						TypeParameter = "󰬛",
+					},
+				},
+			},
+		},
+	},
 
-  {
-    'felpafel/inlay-hint.nvim',
-    event = 'LspAttach',
-    config = true,
-  },
+	{
+		"felpafel/inlay-hint.nvim",
+		event = "LspAttach",
+		config = true,
+	},
 
 	{
 		"williamboman/mason.nvim",
@@ -236,6 +278,9 @@ local plugins = {
 			PATH = "prepend",
 		},
 	},
+
+	"stevearc/conform.nvim",
+	"zapling/mason-conform.nvim",
 
 	{
 		"rachartier/tiny-inline-diagnostic.nvim",
@@ -248,29 +293,16 @@ local plugins = {
 
 	{ "j-hui/fidget.nvim", opts = {} },
 
-  {
-    "folke/which-key.nvim",
-    event = "VeryLazy",
-    opts = {
-    },
-    keys = {
-      {
-        "<leader>?",
-        function()
-          require("which-key").show({ global = false })
-        end,
-        desc = "Buffer Local Keymaps (which-key)",
-      },
-    },
-  },
-  {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    config = function()
-      require("copilot").setup({})
-    end,
-  },
+	{ "nvzone/menu", lazy = true, dependencies = { "nvzone/volt" } },
+
+	{
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({})
+		end,
+	},
 	{
 		"yetone/avante.nvim",
 		build = vim.fn.has("win32") ~= 0
