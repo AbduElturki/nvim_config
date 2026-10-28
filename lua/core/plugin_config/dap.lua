@@ -2,8 +2,9 @@ local dap = require("dap")
 local dapview = require("dap-view")
 
 dap.adapters.codelldb = {
-	type = "executable",
-	command = "codelldb",
+	type = "server",
+	port = "${port}",
+	executable = { command = "codelldb", args = { "--port", "${port}" } },
 }
 
 dap.configurations.cpp = {

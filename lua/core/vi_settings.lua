@@ -23,3 +23,11 @@ vim.opt.colorcolumn = "80"
 vim.opt.clipboard = "unnamedplus"
 
 vim.loader.enable()
+
+-- Keep undo history across restarts in Neovim's private state directory.
+local undo_dir = vim.fn.stdpath("state") .. "/undo"
+vim.fn.mkdir(undo_dir, "p", 448)
+vim.opt.undodir = undo_dir .. "//"
+vim.opt.undofile = true
+-- Native EditorConfig overrides the global/filetype fallback options.
+vim.g.editorconfig = true

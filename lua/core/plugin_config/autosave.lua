@@ -1,32 +1,54 @@
-require("auto-save").setup({
-	enabled = true, -- start auto-save when the plugin is loaded (i.e. when your package manager loads it)
-	execution_message = {
-		message = function() -- message to print on save
-			return ("AutoSave: saved at " .. vim.fn.strftime("%H:%M:%S"))
-		end,
-		dim = 0.18, -- dim the color of `message`
-		cleaning_interval = 1250, -- (milliseconds) automatically clean MsgArea after displaying `message`. See :h MsgArea
-	},
-	trigger_events = { "InsertLeave", "TextChanged" }, -- vim events that trigger auto-save. See :h events
-	-- function that determines whether to save the current buffer or not
-	-- return true: if buffer is ok to be saved
-	-- return false: if it's not ok to be saved
-	condition = function(buf)
-		local fn = vim.fn
-		local utils = require("auto-save.utils.data")
-
-		if fn.getbufvar(buf, "&modifiable") == 1 and utils.not_in(fn.getbufvar(buf, "&filetype"), {}) then
-			return true -- met condition(s), can save
-		end
-		return false -- can't save
+-- Buffer-local controls: :AutosaveToggle and :AutosaveDelay {milliseconds}.
+vim.g.autosave_delay = 750
+local pending = {}
+vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged" }, {
+	group = vim.api.nvim_create_augroup("NativeAutosave", { clear = true }),
+	callback = function(event)
+		local buf = event.buf
+		local token = {}
+		pending[buf] = token
+		vim.defer_fn(function()
+			if pending[buf] ~= token then
+				return
+			end
+			pending[buf] = nil
+			if not vim.api.nvim_buf_is_valid(buf) then
+				return
+			end
+			if vim.b[buf].autosave_enabled == false then
+				return
+			end
+			local opt = vim.bo[buf]
+			if
+				opt.buftype ~= ""
+				or not opt.modifiable
+				or opt.readonly
+				or not opt.modified
+				or vim.api.nvim_buf_get_name(buf) == ""
+			then
+				return
+			end
+			local ok, err = pcall(vim.api.nvim_buf_call, buf, function()
+				vim.cmd("silent update")
+			end)
+			if not ok then
+				vim.notify("Autosave: " .. tostring(err), vim.log.levels.WARN)
+			end
+		end, vim.b[buf].autosave_delay or vim.g.autosave_delay)
 	end,
-	write_all_buffers = false, -- write all buffers when the current one meets `condition`
-	debounce_delay = 135, -- saves the file at most every `debounce_delay` milliseconds
-	callbacks = { -- functions to be executed at different intervals
-		enabling = nil, -- ran when enabling auto-save
-		disabling = nil, -- ran when disabling auto-save
-		before_asserting_save = nil, -- ran before checking `condition`
-		before_saving = nil, -- ran before doing the actual save
-		after_saving = nil, -- ran after doing the actual save
-	},
 })
+
+vim.api.nvim_create_user_command("AutosaveToggle", function()
+	vim.b.autosave_enabled = vim.b.autosave_enabled == false
+	pending[vim.api.nvim_get_current_buf()] = nil
+	vim.notify("Autosave " .. (vim.b.autosave_enabled and "enabled" or "paused") .. " for this buffer")
+end, {})
+vim.api.nvim_create_user_command("AutosaveDelay", function(opts)
+	local delay = tonumber(opts.args)
+	if not delay or delay < 0 or delay % 1 ~= 0 then
+		vim.notify("Use a non-negative integer number of milliseconds", vim.log.levels.ERROR)
+		return
+	end
+	vim.b.autosave_delay = delay
+end, { nargs = 1 })
+vim.keymap.set("n", "<leader>ua", "<Cmd>AutosaveToggle<CR>", { desc = "Toggle buffer autosave" })

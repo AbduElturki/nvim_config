@@ -36,9 +36,7 @@ require("winbar").setup({
 		"lir",
 		"Outline",
 		"spectre_panel",
-		"toggleterm",
+		"terminal",
 		"qf",
 	},
 })
-
-vim.keymap.set("n", "<leader>q", ":bp|sp|bn|bd<CR>", { noremap = true, silent = true, desc = "Close current buffer" })
