@@ -31,3 +31,9 @@ vim.opt.undodir = undo_dir .. "//"
 vim.opt.undofile = true
 -- Native EditorConfig overrides the global/filetype fallback options.
 vim.g.editorconfig = true
+
+-- File picker splits open in predictable directions; mouse clicks can focus
+-- the editor behind a floating explorer, which closes on loss of focus.
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+vim.opt.mouse = "a"

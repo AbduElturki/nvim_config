@@ -40,10 +40,85 @@ local plugins = {
 			animate = { enabled = true },
 			bigfile = { enabled = true },
 			dashboard = { enabled = true },
-			explorer = { enabled = false },
+			explorer = { enabled = true },
 			indent = { enabled = true },
 			input = { enabled = true },
-			picker = { enabled = false },
+			picker = {
+				enabled = true,
+				ui_select = false,
+				sources = {
+					explorer = {
+						auto_close = true,
+						config = function(opts)
+							return require("core.explorer").config(opts)
+						end,
+						actions = {
+							explorer_up = function(picker, item)
+								require("core.explorer").parent(picker, item)
+							end,
+							explorer_git_root = function(picker)
+								require("core.explorer").select_root(picker)
+							end,
+							explorer_focus = function(picker, item)
+								-- Keep the tree anchored when selecting a directory with '.'.
+								if item and item.dir then
+									require("snacks.explorer.actions").update(picker, { target = item.file })
+								end
+							end,
+						},
+						jump = { close = true },
+						layout = {
+							preset = "default",
+							preview = true,
+							layout = {
+								box = "horizontal",
+								width = 0.9,
+								height = 0.85,
+								min_width = 60,
+								backdrop = false,
+								border = "rounded",
+								title = " {title} ",
+								title_pos = "center",
+								footer = " - up | gr root | Enter open | v/s split | ? keys | Esc close ",
+								footer_pos = "center",
+								{
+									box = "vertical",
+									{ win = "input", height = 1, border = "bottom" },
+									{ win = "list", border = "none" },
+								},
+								{ win = "preview", title = "{preview}", border = "left", width = 0.55 },
+							},
+						},
+						win = {
+							list = {
+								keys = {
+									["<C-n>"] = "close",
+									["<Esc>"] = "close",
+									["q"] = "close",
+									["<C-c>"] = "close",
+									["-"] = { "explorer_up", desc = "Select parent folder in project tree" },
+									["<BS>"] = { "explorer_up", desc = "Select parent folder in project tree" },
+									["gr"] = { "explorer_git_root", desc = "Select project root" },
+									["v"] = { "edit_vsplit", desc = "Open to the right" },
+									["s"] = { "edit_split", desc = "Open below" },
+									["<C-v>"] = { "edit_vsplit", desc = "Open to the right" },
+									["<C-s>"] = { "edit_split", desc = "Open below" },
+									["?"] = { "toggle_help_list", desc = "Show explorer keymaps" },
+								},
+							},
+							input = {
+								keys = {
+									["<C-n>"] = { "close", mode = { "n", "i" } },
+									["<Esc>"] = { "close", mode = { "n", "i" } },
+									["<C-v>"] = { "edit_vsplit", mode = { "n", "i" }, desc = "Open to the right" },
+									["<C-s>"] = { "edit_split", mode = { "n", "i" }, desc = "Open below" },
+								},
+							},
+							preview = { keys = { ["<C-n>"] = "close", ["<Esc>"] = "close", ["q"] = "close" } },
+						},
+					},
+				},
+			},
 			notifier = { enabled = true },
 			quickfile = { enabled = true },
 			scope = { enabled = true },

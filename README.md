@@ -4,7 +4,7 @@ Requires Neovim 0.12+. Plugins are managed by Lazy; `lazy-lock.json` records the
 
 ## Native features
 
-Neovim handles LSP startup, completion, LSP snippets, inlay hints, diagnostics, Tree-sitter highlighting, context menus, file browsing, and terminals. Small autocmds provide autosave and reload files changed externally. Plugins remain for features such as fuzzy search, Git integration, debugger UI, themes, parser installation and formatter orchestration.
+Neovim handles LSP startup, completion, LSP snippets, inlay hints, diagnostics, Tree-sitter highlighting, context menus and terminals. Floating file browsing with live previews uses the existing Snacks plugin. Small autocmds provide autosave and reload files changed externally. Plugins remain for features such as fuzzy search, Git integration, debugger UI, themes, parser installation and formatter orchestration.
 
 Format-on-save is disabled. Autosave remains enabled for modified, writable, named file buffers, with a 750 ms debounce. `Space u a` / `:AutosaveToggle` pauses it for the current buffer; `:AutosaveDelay 1000` changes that buffer’s delay. Pausing cancels pending saves.
 
@@ -38,7 +38,14 @@ The executables must be on `PATH`. Sign in interactively on first launch as need
 
 ## Editing shortcuts
 
-- `Ctrl-n`: toggle the native file explorer; `Space -`: explore the current file's directory.
+In command/search history (`q:`, `q/`, `q?`), `Esc`, `q` or `Space q` closes the window. Escape also closes it while editing a history entry. These mappings apply only to the history window.
+
+- `Ctrl-n` or `Space -`: toggle the floating explorer rooted at the project root, with the current file revealed in the tree.
+- In the explorer: `j`/`k` select a file and update its preview, Enter opens it, `l`/`h` expand/collapse directories, `-` or Backspace selects the parent folder within the tree, `gr` selects the project root, `/` searches, and `P` toggles the preview. `Ctrl-f`/`Ctrl-b` scroll the preview.
+- `v` / `Ctrl-v` opens the selected file in a split to the right; `s` / `Ctrl-s` opens it below. The Ctrl shortcuts also work while typing in the search field.
+- The tree stays anchored at the project root while browsing; parent navigation stops there. The project path stays visible in the title even when the root row scrolls out of view. Git repositories use their Git root; other projects use build/project markers or the starting directory.
+- The explorer footer shows common shortcuts. Press `?` in the file list for the full keymap help.
+- `Esc`, `q`, or `Ctrl-n` closes the explorer. Choosing a file closes the popup and returns to the editor. Clicking the editor outside the popup also closes it; clicking inside the preview keeps it open.
 - Completion appears automatically. `Ctrl-n` / `Ctrl-p` select candidates; Enter accepts a selected candidate, otherwise inserts a newline. `Ctrl-y` also accepts; `Ctrl-e` dismisses.
 - `Ctrl-o` in insert mode: request completion. `Ctrl-x Ctrl-f`: filename completion.
 - Tab / Shift-Tab: move between active snippet placeholders.
@@ -58,7 +65,7 @@ For macOS, `brew install neovim tree-sitter-cli fzf ripgrep pyright` provides th
 
 Use `:Mason` to install `lua-language-server`, `clangd`, `rust-analyzer`, `stylua`, `black`, `isort`, `clang-format`, and `codelldb`. Rust projects also need their usual Rust toolchain. Python debugging uses `uv` and the DAP Python integration.
 
-Install parsers with `:TSInstall c cpp lua vim vimdoc query markdown markdown_inline python rust javascript`. After updating Tree-sitter, run `:TSUpdate`. Missing parsers fall back to standard syntax highlighting.
+Install parsers with `:TSInstall c cpp lua vim vimdoc query markdown markdown_inline python rust javascript cmake bash zsh`. After updating Tree-sitter, run `:TSUpdate`. Missing parsers or highlight queries fall back to standard syntax highlighting. CMake uses the `cmake` parser, POSIX/Bash shell scripts use `bash`, and Zsh uses `zsh`.
 
 Run `:checkhealth vim.lsp nvim-treesitter lazy` to inspect the installation. `nvim-lspconfig` supplies server definitions; it does not replace Neovim's native LSP implementation.
 

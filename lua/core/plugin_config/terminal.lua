@@ -126,6 +126,10 @@ vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter", "TermClose", "TermLeave
 	group = vim.api.nvim_create_augroup("ReloadExternalEdits", { clear = true }),
 	callback = function()
 		vim.schedule(function()
+			-- :checktime is forbidden in the special q: / q/ command window.
+			if vim.fn.getcmdwintype() ~= "" then
+				return
+			end
 			vim.cmd.checktime()
 		end)
 	end,
